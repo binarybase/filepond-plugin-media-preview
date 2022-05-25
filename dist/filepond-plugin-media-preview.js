@@ -196,7 +196,11 @@
 
           if (isPreviewableAudio(item.file)) {
             new AudioPlayer(root.ref.media, root.ref.audio);
-          } // determine dimensions and update panel accordingly
+          }
+
+          const fixedPreviewHeight = root.query('GET_IMAGE_PREVIEW_HEIGHT');
+          const minPreviewHeight = root.query('GET_IMAGE_PREVIEW_MIN_HEIGHT');
+          const maxPreviewHeight = root.query('GET_IMAGE_PREVIEW_MAX_HEIGHT'); // determine dimensions and update panel accordingly
 
           root.ref.media.addEventListener(
             'loadeddata',
@@ -211,7 +215,13 @@
 
               root.dispatch('DID_UPDATE_PANEL_HEIGHT', {
                 id: props.id,
-                height: height,
+                height:
+                  fixedPreviewHeight !== null
+                    ? fixedPreviewHeight
+                    : Math.max(
+                        minPreviewHeight,
+                        Math.min(height, maxPreviewHeight)
+                      ),
               });
             },
             false
