@@ -58,6 +58,10 @@ export const createMediaView = _ =>
                     new AudioPlayer(root.ref.media, root.ref.audio);
                 }
 
+                const fixedPreviewHeight = root.query('GET_IMAGE_PREVIEW_HEIGHT');
+                const minPreviewHeight = root.query('GET_IMAGE_PREVIEW_MIN_HEIGHT');
+                const maxPreviewHeight = root.query('GET_IMAGE_PREVIEW_MAX_HEIGHT');        
+
                 // determine dimensions and update panel accordingly
                 root.ref.media.addEventListener('loadeddata', () => {
                     let height = 75; // default height for audio panel
@@ -69,7 +73,7 @@ export const createMediaView = _ =>
 
                     root.dispatch('DID_UPDATE_PANEL_HEIGHT', {
                         id: props.id,
-                        height: height
+                        height: fixedPreviewHeight !== null ? fixedPreviewHeight : Math.max(minPreviewHeight, Math.min(height, maxPreviewHeight))
                     });
                 }, false);
             }
