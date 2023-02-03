@@ -1,6 +1,7 @@
 import { createMediaWrapperView } from './view/createMediaWrapperView';
 import { isPreviewableVideo } from './utils/isPreviewableVideo';
 import { isPreviewableAudio } from './utils/isPreviewableAudio';
+import { isPreviewableImage } from './utils/isPreviewableImage';
 
 /**
  * Media Preview Plugin
@@ -28,8 +29,9 @@ const plugin = fpAPI => {
             const item = query('GET_ITEM', id);
             const allowVideoPreview = query('GET_ALLOW_VIDEO_PREVIEW');
             const allowAudioPreview = query('GET_ALLOW_AUDIO_PREVIEW');
+            const allowImagePreview = query('GET_ALLOW_IMAGE_PREVIEW');
 
-            if (!item || item.archived || ((!isPreviewableVideo(item.file) || !allowVideoPreview) && (!isPreviewableAudio(item.file) || !allowAudioPreview))) {
+            if (!item || item.archived || ((!isPreviewableVideo(item.file) || !allowVideoPreview) && (!isPreviewableAudio(item.file) || !allowAudioPreview) && (!isPreviewableImage(item.file) || !allowImagePreview))) {
                 return;
             }
 
@@ -51,9 +53,10 @@ const plugin = fpAPI => {
                 const item = query('GET_ITEM', id);
                 const allowVideoPreview = root.query('GET_ALLOW_VIDEO_PREVIEW');
                 const allowAudioPreview = root.query('GET_ALLOW_AUDIO_PREVIEW');
+                const allowImagePreview = root.query('GET_ALLOW_IMAGE_PREVIEW');
 
                 // don't do anything while not a video or audio file or hidden
-                if (!item || ((!isPreviewableVideo(item.file) || !allowVideoPreview) && (!isPreviewableAudio(item.file) || !allowAudioPreview)) || root.rect.element.hidden) return;
+                if (!item || ((!isPreviewableVideo(item.file) || !allowVideoPreview) && (!isPreviewableAudio(item.file) || !allowAudioPreview) && (!isPreviewableImage(item.file) || !allowImagePreview)) || root.rect.element.hidden) return;
             })
         );
     });
@@ -62,7 +65,8 @@ const plugin = fpAPI => {
     return {
         options: {
             allowVideoPreview: [true, Type.BOOLEAN],
-            allowAudioPreview: [true, Type.BOOLEAN]
+            allowAudioPreview: [true, Type.BOOLEAN],
+            allowImagePreview: [true, Type.BOOLEAN]
         }
     };
 };

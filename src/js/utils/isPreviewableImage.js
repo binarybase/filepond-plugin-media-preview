@@ -1,0 +1,1 @@
+export const isPreviewableImage = file => /^image/.test(file.type);

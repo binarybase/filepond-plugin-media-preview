@@ -1,5 +1,6 @@
 import { isPreviewableVideo } from './../utils/isPreviewableVideo';
 import { isPreviewableAudio } from './../utils/isPreviewableAudio';
+import { isPreviewableImage } from './../utils/isPreviewableImage';
 import AudioPlayer from './../components/audioPlayer';
 
 export const createMediaView = _ =>
@@ -12,7 +13,7 @@ export const createMediaView = _ =>
 
             // get item
             const item = root.query('GET_ITEM', { id: props.id });
-            let tagName = isPreviewableAudio(item.file) ? 'audio' : 'video';
+            let tagName = isPreviewableAudio(item.file) ? 'audio' : isPreviewableImage(item.file) ? 'img' : 'video';
 
             root.ref.media = document.createElement(tagName);
             root.ref.media.setAttribute('controls', true);
@@ -61,6 +62,18 @@ export const createMediaView = _ =>
                 const fixedPreviewHeight = root.query('GET_IMAGE_PREVIEW_HEIGHT');
                 const minPreviewHeight = root.query('GET_IMAGE_PREVIEW_MIN_HEIGHT');
                 const maxPreviewHeight = root.query('GET_IMAGE_PREVIEW_MAX_HEIGHT');        
+
+                if(isPreviewableImage(item.file)){
+                    root.ref.media.addEventListener('load', () => {
+                        const height = root.ref.media.height;
+                        root.dispatch('DID_UPDATE_PANEL_HEIGHT', {
+                            id: props.id,
+                            height: fixedPreviewHeight !== null ? fixedPreviewHeight : Math.max(minPreviewHeight, Math.min(height, maxPreviewHeight))
+                        });
+                    }, false);
+
+                    return;
+                }
 
                 // determine dimensions and update panel accordingly
                 root.ref.media.addEventListener('loadeddata', () => {
